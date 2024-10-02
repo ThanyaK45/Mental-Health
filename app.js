@@ -1,7 +1,7 @@
 // Import Firebase SDK
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import axios from 'axios';
 
 // Firebase Configuration
@@ -19,19 +19,49 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// Function to register a new user
+export async function registerUser(email, password) {
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        console.log('User registered successfully');
+    } catch (error) {
+        console.error('Error registering user:', error.message);
+    }
+}
+
+// Function to log in a user
+export async function loginUser(email, password) {
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log('User logged in successfully');
+    } catch (error) {
+        console.error('Error logging in:', error.message);
+    }
+}
+
+// Function to log out the user
+export async function logoutUser() {
+    try {
+        await signOut(auth);
+        console.log('User logged out successfully');
+    } catch (error) {
+        console.error('Error logging out:', error.message);
+    }
+}
+
 // Function to log daily entry
-async function logEntry(text) {
-    const user = auth.currentUser; // รับข้อมูลผู้ใช้ปัจจุบัน
+export async function logEntry(text) {
+    const user = auth.currentUser; // Get the currently logged in user
     if (user) {
         try {
-            // บันทึกข้อความใน Firestore
+            // Save the log entry to Firestore
             await addDoc(collection(db, 'users', user.uid, 'dailyLogs'), {
                 text: text,
-                timestamp: new Date().toISOString(), // บันทึกเวลาที่บันทึกข้อมูล
+                timestamp: new Date().toISOString(), // Save the time of the log entry
             });
             console.log('Log entry saved successfully');
             
-            // เรียกใช้ API หลังจากบันทึกข้อมูล
+            // Call API after saving the entry
             await sendDataToAWS(user.uid, text);
         } catch (error) {
             console.error('Error saving log entry:', error);
@@ -54,8 +84,13 @@ async function sendDataToAWS(userId, text) {
     }
 }
 
-// Example usage
-async function submitLog() {
-    const userInput = document.getElementById('userInput').value; // รับค่าจาก input ของผู้ใช้
-    await logEntry(userInput);
-}
+// Monitor the authentication state
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log('User is logged in:', user);
+        // Display journal section or any other user-related UI updates
+    } else {
+        console.log('No user is logged in');
+        // Hide journal section or update UI accordingly
+    }
+});

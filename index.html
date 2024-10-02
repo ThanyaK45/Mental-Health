@@ -4,50 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mental Health Log</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
-    
-    <!-- Include your JavaScript file -->
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js"></script> <!-- Include your JavaScript file -->
 </head>
 <body>
     <h1>Mental Health Journal</h1>
-
-    <!-- Registration form -->
-    <div>
-        <h2>Register</h2>
-        <input type="email" id="registerEmail" placeholder="Email">
-        <input type="password" id="registerPassword" placeholder="Password">
-        <button onclick="registerUser(document.getElementById('registerEmail').value, document.getElementById('registerPassword').value)">Register</button>
-    </div>
-
-    <!-- Login form -->
-    <div>
-        <h2>Login</h2>
-        <input type="email" id="loginEmail" placeholder="Email">
-        <input type="password" id="loginPassword" placeholder="Password">
-        <button onclick="loginUser(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value)">Login</button>
-    </div>
-
-    <!-- Journal form (only visible after login) -->
-    <div id="journalSection" style="display:none;">
-        <textarea id="userInput" placeholder="Write your daily feelings here..."></textarea>
-        <button onclick="logEntry(document.getElementById('userInput').value)">Submit</button>
-        <button onclick="logoutUser()">Logout</button>
-    </div>
-
-    <script>
-        // Check if user is already logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('journalSection').style.display = 'block';
-            } else {
-                document.getElementById('journalSection').style.display = 'none';
-            }
-        });
-    </script>
+    <textarea id="userInput" placeholder="Write your daily feelings here..."></textarea>
+    <button onclick="submitLog()">Submit</button>
 </body>
 </html>
